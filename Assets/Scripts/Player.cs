@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
     private Rigidbody rb;
     public float MoveSpeed = 5f;
     private float moveHorizontal;
-    private float moveForward;
+    private float moveVertical;
 
     // Saut
     public float jumpForce = 10f;
@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         moveHorizontal = Input.GetAxisRaw("Horizontal");
-        moveForward = Input.GetAxisRaw("Vertical");
+        moveVertical = Input.GetAxisRaw("Vertical");
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
 
     void MovePlayer()
     {
-        Vector3 movement = (transform.right * moveHorizontal + transform.forward * moveForward).normalized;
+        Vector3 movement = (transform.right * moveHorizontal + transform.forward * moveVertical).normalized;
         Vector3 targetVelocity = movement * MoveSpeed;
 
         Vector3 velocity = rb.velocity;
@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
         velocity.z = targetVelocity.z;
         rb.velocity = velocity;
 
-        if (isGrounded && moveHorizontal == 0 && moveForward == 0)
+        if (isGrounded && moveHorizontal == 0 && moveVertical == 0)
         {
             rb.velocity = new Vector3(0, rb.velocity.y, 0);
         }

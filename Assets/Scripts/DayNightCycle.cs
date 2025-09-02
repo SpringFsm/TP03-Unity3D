@@ -7,14 +7,14 @@ public class DayNightCycle : MonoBehaviour
 {
     private float timer;
     public float cycleSpeed;
-    private Light light;
+    private Light sceneLight;
     
     public Material skyboxDay;
     public Material skyboxNight;
 
     private void Start()
     {
-        light = GetComponent<Light>();
+        sceneLight = GetComponent<Light>();
     }
 
     private void Update()
@@ -30,15 +30,15 @@ public class DayNightCycle : MonoBehaviour
         //set intensities
         if (timer >= 0 && timer <= 90)
         {
-            light.intensity = Mathf.Lerp(0.3f, 1f,  timer / 90 );
+            sceneLight.intensity = Mathf.Lerp(0.3f, 1f,  timer / 90 );
         }
         else if(timer >= 90 && timer <= 180)
         {
-            light.intensity = Mathf.Lerp(1f, 0.3f,  (timer - 90) / 90 );
+            sceneLight.intensity = Mathf.Lerp(1f, 0.3f,  (timer - 90) / 90 );
         }
         else
         {
-            light.intensity = 0.3f;
+            sceneLight.intensity = 0.3f;
         }
         
         // change skybox

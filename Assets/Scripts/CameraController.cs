@@ -24,7 +24,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         distance = offset.magnitude;
-        Cursor.lockState = CursorLockMode.Locked; // Verrouille la souris
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     void LateUpdate()
@@ -35,8 +35,6 @@ public class CameraController : MonoBehaviour
         // Calcul position finale
         Quaternion rotation = Quaternion.Euler(pitch, yaw, 0);
         Vector3 direction = rotation * Vector3.back * distance;
-        
-        Debug.Log(distance);
 
         transform.position = player.position + direction;
         transform.LookAt(player.position);

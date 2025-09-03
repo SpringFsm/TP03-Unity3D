@@ -41,7 +41,7 @@ public class CameraController : MonoBehaviour
         
         if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, camCollisionDistance))
         {
-            transform.position = transform.position + transform.forward * hit.distance;
+            transform.position = transform.position + transform.forward * (hit.distance + 1f);
         }
     }
 

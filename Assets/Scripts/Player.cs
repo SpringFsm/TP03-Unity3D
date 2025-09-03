@@ -18,10 +18,18 @@ public class Player : MonoBehaviour
     private float groundCheckDelay = 0.3f;
     private float raycastDistance = 1.2f;
 
+    // Animations
+    private Animator animator;
+    // Model Rotation
+    public Transform model;
+    public float rotationSpeed;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
+        animator = GetComponentInChildren<Animator>();
     }
 
     void Update()
@@ -49,6 +57,8 @@ public class Player : MonoBehaviour
     {
         MovePlayer();
         ApplyJumpPhysics();
+        HandleRunAnimation();
+        HandleModelRotation();
     }
 
     void MovePlayer()
@@ -84,5 +94,39 @@ public class Player : MonoBehaviour
         {
             rb.velocity += Vector3.up * Physics.gravity.y * ascendMultiplier * Time.fixedDeltaTime;
         }
+    }
+
+    void HandleRunAnimation()
+    {
+        if (moveHorizontal == 0 && moveVertical == 0)
+        {
+            animator.SetBool("isMoving", false);
+        }
+        else
+        {
+            animator.SetBool("isMoving", true);
+        }
+        if (rb.velocity.y > 0)
+        {
+            animator.SetBool("isJumping", true);
+        }
+        if (isGrounded)
+        {
+            animator.SetBool("isJumping", false);
+        }
+    }
+
+    void HandleModelRotation()
+    {
+        Vector3 orientation = transform.forward * moveVertical + transform.right * moveHorizontal;
+        if (orientation == Vector3.zero)
+        {
+            orientation = model.forward;
+        }
+
+        Quaternion rotation = Quaternion.LookRotation(orientation);
+        Quaternion modelRotation = Quaternion.Slerp(model.rotation, rotation, rotationSpeed * Time.deltaTime);
+
+        model.rotation = modelRotation;
     }
 }

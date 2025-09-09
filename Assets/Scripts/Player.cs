@@ -51,6 +51,11 @@ public class Player : MonoBehaviour
         {
             groundCheckTimer -= Time.deltaTime;
         }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Attack();
+        }
     }
 
     void FixedUpdate()
@@ -128,5 +133,13 @@ public class Player : MonoBehaviour
         Quaternion modelRotation = Quaternion.Slerp(model.rotation, rotation, rotationSpeed * Time.deltaTime);
 
         model.rotation = modelRotation;
+    }
+
+    private void Attack()
+    {
+        Debug.Log("Attack");
+        // TODO : hit ennemy
+        // Box Cast in front and detect tag "ennemy"
+        animator.SetTrigger("Attack");
     }
 }

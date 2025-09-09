@@ -17,8 +17,8 @@ public class CameraController : MonoBehaviour
     private float distance;
     private float yaw = 0f;
     private float pitch = 20f;
-
     public Transform cam;
+    public LayerMask layerMask;
     public float camCollisionDistance = 3f;
 
     void Start()
@@ -39,7 +39,7 @@ public class CameraController : MonoBehaviour
         transform.position = player.position + direction;
         transform.LookAt(player.position);
         
-        if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, camCollisionDistance))
+        if (Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, camCollisionDistance, layerMask))
         {
             transform.position = transform.position + transform.forward * (hit.distance + 1f);
         }

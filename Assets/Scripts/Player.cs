@@ -1,17 +1,21 @@
+using System.Collections;
+using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     // Mouvement
     private Rigidbody rb;
-    public float MoveSpeed = 5f;
+    private float moveSpeed = 5f;
     private float moveHorizontal;
     private float moveVertical;
 
     // Saut
-    public float jumpForce = 10f;
-    public float fallMultiplier = 2.5f;
-    public float ascendMultiplier = 2f;
+    private float jumpForce = 10f;
+    private float fallMultiplier = 2.5f;
+    private float ascendMultiplier = 2f;
     private bool isGrounded = true;
     public LayerMask groundLayer;
     private float groundCheckTimer = 0f;
@@ -20,20 +24,45 @@ public class Player : MonoBehaviour
 
     // Animations
     private Animator animator;
+
     // Model Rotation
     public Transform model;
-    public float rotationSpeed;
+    private float rotationSpeed = 15f;
 
-    void Start()
+    // Hp and hit logic
+    private float inviTime = 1f;
+    private float inviTimer;
+    private int maxHp = 5;
+    private int currentHp;
+    public Image healthBar;
+
+    // Attack
+    private float atkTime = 0.7f;
+    private float atkTimer;
+    public BoxCollider swordHitBox;
+
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-
         animator = GetComponentInChildren<Animator>();
+        currentHp = maxHp;
+        inviTimer = inviTime;
+        atkTimer = atkTime;
+        swordHitBox.enabled = false;
     }
 
-    void Update()
+    private void Update()
     {
+        UpdateHealthBar();
+
+        if (currentHp <= 0)
+        {
+            Time.timeScale = 0;
+            Debug.Log("GameOver");
+            return;
+        }
+
         moveHorizontal = Input.GetAxisRaw("Horizontal");
         moveVertical = Input.GetAxisRaw("Vertical");
 
@@ -52,13 +81,27 @@ public class Player : MonoBehaviour
             groundCheckTimer -= Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (inviTimer > 0)
         {
-            Attack();
+            inviTimer -= Time.deltaTime;
+        }
+
+        if (atkTimer > 0)
+        {
+            atkTimer -= Time.deltaTime;
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                animator.SetTrigger("Attack");
+                atkTimer = atkTime;
+                StartCoroutine(Attack());
+            }
         }
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         MovePlayer();
         ApplyJumpPhysics();
@@ -66,10 +109,10 @@ public class Player : MonoBehaviour
         HandleModelRotation();
     }
 
-    void MovePlayer()
+    private void MovePlayer()
     {
         Vector3 movement = (transform.right * moveHorizontal + transform.forward * moveVertical).normalized;
-        Vector3 targetVelocity = movement * MoveSpeed;
+        Vector3 targetVelocity = movement * moveSpeed;
 
         Vector3 velocity = rb.velocity;
         velocity.x = targetVelocity.x;
@@ -82,14 +125,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Jump()
+    private void Jump()
     {
         isGrounded = false;
         groundCheckTimer = groundCheckDelay;
         rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
     }
 
-    void ApplyJumpPhysics()
+    private void ApplyJumpPhysics()
     {
         if (rb.velocity.y < 0)
         {
@@ -101,7 +144,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void HandleRunAnimation()
+    private void HandleRunAnimation()
     {
         if (moveHorizontal == 0 && moveVertical == 0)
         {
@@ -121,7 +164,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void HandleModelRotation()
+    private void HandleModelRotation()
     {
         Vector3 orientation = transform.forward * moveVertical + transform.right * moveHorizontal;
         if (orientation == Vector3.zero)
@@ -135,11 +178,32 @@ public class Player : MonoBehaviour
         model.rotation = modelRotation;
     }
 
-    private void Attack()
+    public void GetHit(int damage)
     {
-        Debug.Log("Attack");
-        // TODO : hit ennemy
-        // Box Cast in front and detect tag "ennemy"
-        animator.SetTrigger("Attack");
+        if (inviTimer <= 0)
+        {
+            currentHp -= damage;
+
+            inviTimer = inviTime;
+        }
+    }
+
+    private IEnumerator Attack()
+    {
+        yield return new WaitForSeconds(0.4f);
+        swordHitBox.enabled = true;
+        yield return new WaitForSeconds(0.2f);
+        swordHitBox.enabled = false;
+    }
+
+    private void UpdateHealthBar()
+    {
+        float healthRatio = (float)currentHp / maxHp;
+        healthBar.fillAmount = healthRatio;
+
+        if (healthRatio <= 0.5f)
+        {
+            healthBar.color = Color.red;
+        }
     }
 }

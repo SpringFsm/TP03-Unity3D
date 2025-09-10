@@ -15,6 +15,7 @@ public class EnnemyBehaviour : MonoBehaviour
     private int health;
     public ParticleSystem hitFx;
     public Image healthBar;
+    public AudioSource ennemyGetHitSound;
 
     void Start()
     {
@@ -27,12 +28,20 @@ public class EnnemyBehaviour : MonoBehaviour
 
         if (health <= 0)
         {
+            target.GetComponent<Player>().Heal();
             Destroy(gameObject);
             return;
         }
 
         if (target != null)
         {
+            if (target.GetComponent<Player>().isDead)
+            {
+                target = null;
+                animator.SetBool("Run", false);
+                return;
+            }
+
             transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
 
             transform.LookAt(target);
@@ -65,5 +74,6 @@ public class EnnemyBehaviour : MonoBehaviour
     {
         health -= damage;
         hitFx.Play();
+        ennemyGetHitSound.Play();
     }
 }

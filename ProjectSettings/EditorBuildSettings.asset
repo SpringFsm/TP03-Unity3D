@@ -4,5 +4,14 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/TestingArea.unity
+    guid: e702b523164c22640b8743f3f8f7df06
+  - enabled: 1
+    path: Assets/Scenes/CourbeBezier.unity
+    guid: f97e51a55d1e1344fafe163bc3b3c0d3
   m_configObjects: {}

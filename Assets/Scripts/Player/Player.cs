@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -29,17 +30,23 @@ public class Player : MonoBehaviour
     public Transform model;
     private float rotationSpeed = 15f;
 
+    public BoxCollider swordHitBox;
+
     // Hp and hit logic
-    private float inviTime = 1f;
+    [Header("Health")]
+    public float inviTime = 1f;
     private float inviTimer;
-    private int maxHp = 5;
+    public int maxHp = 5;
     private int currentHp;
     public Image healthBar;
+    public bool isDead;
 
     // Attack
     private float atkTime = 0.7f;
     private float atkTimer;
-    public BoxCollider swordHitBox;
+
+    [Header("Sound")]
+    [SerializeField] private AudioSource playerGetHitSound;
 
     private void Start()
     {
@@ -54,13 +61,15 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
+        if (isDead){ return; }
+        
         UpdateHealthBar();
 
         if (currentHp <= 0)
         {
-            Time.timeScale = 0;
-            Debug.Log("GameOver");
-            return;
+            isDead = true;
+            animator.SetTrigger("Died");
+            StartCoroutine(Restart());
         }
 
         moveHorizontal = Input.GetAxisRaw("Horizontal");
@@ -103,6 +112,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if(isDead){ return; }
         MovePlayer();
         ApplyJumpPhysics();
         HandleRunAnimation();
@@ -185,9 +195,19 @@ public class Player : MonoBehaviour
             currentHp -= damage;
 
             inviTimer = inviTime;
+
+            playerGetHitSound.Play();
         }
     }
 
+    public void Heal()
+    {
+        currentHp++;
+        if (currentHp > maxHp)
+        {
+            currentHp = maxHp;
+        }
+    }
     private IEnumerator Attack()
     {
         yield return new WaitForSeconds(0.4f);
@@ -205,5 +225,16 @@ public class Player : MonoBehaviour
         {
             healthBar.color = Color.red;
         }
+    }
+
+    private IEnumerator Restart()
+    {
+        Debug.Log("GameOver");
+        rb.useGravity = false;
+        rb.velocity = Vector3.zero;
+        gameObject.GetComponent<CapsuleCollider>().enabled = false;
+        gameObject.GetComponentInChildren<CameraController>().enabled = false;
+        yield return new WaitForSecondsRealtime(2.2f);
+        SceneManager.LoadScene("MainScene");
     }
 }

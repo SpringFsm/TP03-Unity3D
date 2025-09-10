@@ -5,16 +5,19 @@ using UnityEngine;
 
 public class DayNightCycle : MonoBehaviour
 {
-    private float timer;
+    [HideInInspector] public float timer;
     public float cycleSpeed;
     private Light sceneLight;
     
     public Material skyboxDay;
     public Material skyboxNight;
 
+    public float startTime;
+
     private void Start()
     {
         sceneLight = GetComponent<Light>();
+        timer = startTime;
     }
 
     private void Update()

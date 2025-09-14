@@ -29,6 +29,7 @@ public class EnnemyBehaviour : MonoBehaviour
         if (health <= 0)
         {
             target.GetComponent<Player>().Heal();
+            target.GetComponent<Player>().kills++;
             Destroy(gameObject);
             return;
         }

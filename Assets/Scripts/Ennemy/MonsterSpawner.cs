@@ -26,7 +26,7 @@ public class MonsterSpawner : MonoBehaviour
         {
             if (canSpawn)
             {
-                for (int i = 0; i <= 5; i++)
+                for (int i = 0; i <= 3; i++)
                 {
                     DoMobSpawn();
                 }

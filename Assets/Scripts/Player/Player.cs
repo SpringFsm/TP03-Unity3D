@@ -48,6 +48,8 @@ public class Player : MonoBehaviour
     [Header("Sound")]
     [SerializeField] private AudioSource playerGetHitSound;
 
+    public int kills = 0;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -61,8 +63,8 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (isDead){ return; }
-        
+        if (isDead) { return; }
+
         UpdateHealthBar();
 
         if (currentHp <= 0)
@@ -112,7 +114,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if(isDead){ return; }
+        if (isDead) { return; }
         MovePlayer();
         ApplyJumpPhysics();
         HandleRunAnimation();
@@ -229,7 +231,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator Restart()
     {
-        Debug.Log("GameOver");
+        Debug.Log("GameOver !\tYou killed : " + kills + " Monsters !");
         rb.useGravity = false;
         rb.velocity = Vector3.zero;
         gameObject.GetComponent<CapsuleCollider>().enabled = false;
